@@ -7,7 +7,7 @@ class Order(BaseModel):
 	project: str
 	describe: str
 	emergency: str
-	descrepair: List[str] = []
+	repair: List[str] = []
 	replace: List[str] = []
 	location: str
 	status: str
