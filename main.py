@@ -1,3 +1,5 @@
+import random
+from datetime import datetime
 from dto.hlDto import *
 from typing import List, Union
 
@@ -27,10 +29,22 @@ app = FastAPI(
 #async def read_root():
 #    return {"Hello": "World"}
 
+@app.get("/status/{status_id}")
+def status(status_id: str, request: Request):
+    client_host = request.client.host
+    return {"client_host": client_host, "status_id": status_id}
+
 @app.post("/status/{status_id}")
 def status(status_id: str, request: Request):
     client_host = request.client.host
     return {"client_host": client_host, "status_id": status_id}
+
+@app.post("/services/")
+async def order(order: Order, request: Request):
+    client_host = request.client.host
+    worker = random.randint(1, 5)
+    register = datetime.today()
+    return {"client_host": client_host, "order": order, "workers_found": worker, "register": register, "preOrder": str(hash(str(client_host)+str(register)))}
 
 #@app.post("/order/{order_id}")
 #def read_root(order_id: str, request: Request):
