@@ -69,8 +69,8 @@ def status(request: Request):
 #    client_host = request.client.host
 #    return {"client_host": client_host, "status_id": status_id}
 
-@app.post("/services/")
-async def order(order: Order, request: Request):
+@app.post("/service/")
+async def service(order: Order, request: Request):
     try:
         client_host = request.client.host
         register = datetime.today()
