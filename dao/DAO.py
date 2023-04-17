@@ -43,21 +43,25 @@ class DAO():
         column = []
         params = []
         filtro = ""
-        try:          
-            for i, val in enumerate(parameters[1:]):
-                if i%2==0:
-                    column.append(val)
-                else:
-                    params.append(val)
+        try:
+            if len(parameters[1:]) > 0:
+                for i, val in enumerate(parameters[1:]):
+                    if i%2==0:
+                        column.append(val)
+                    else:
+                        params.append(val)
 
-            for j, col in enumerate(column):
-                if j == 0:
-                    filtro = filtro + col + " = " + params[j]
-                else:
-                    filtro = filtro + " AND " + col + " = " + params[j]
+                for j, col in enumerate(column):
+                    if j == 0:
+                        filtro = filtro + col + " = " + params[j]
+                    else:
+                        filtro = filtro + " AND " + col + " = " + params[j]
 
-            cmd = f'SELECT * FROM {parameters[0]} WHERE %s' % (filtro)
-            print("CMD:", cmd)
+                cmd = f'SELECT * FROM {parameters[0]} WHERE %s' % (filtro)
+                print("CMD:", cmd)
+            else:
+                cmd = f'SELECT * FROM {parameters[0]}'
+                print("CMD:", cmd)
 
             cur = self.conn.cursor()
             
