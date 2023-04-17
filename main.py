@@ -2,6 +2,8 @@ import random
 import json
 from datetime import datetime
 from dto.hlDto import *
+from dlo.HlDLO import *
+from dlo.ServiceDLO import *
 from typing import List, Union
 
 from fastapi import FastAPI, Request, Response
@@ -31,16 +33,72 @@ app = FastAPI(
 
 @app.get("/workers/service/{service_str}/zipcode/{zipcode_str}")
 def searchWorkers(service_str: str, zipcode_str: str):
+    nm_service = service_str
+    tx_zipcode = zipcode_str
     try:
-        amount = random.randint(1, 5)
-        service = service_str
-        zipcode = zipcode_str
-        worker = [{"amount": str(amount), "service": str(service), "zipcode": str(zipcode)}]
+        objDlo = HlDLO()
+        #amount = random.randint(1, 5)
+        print("==========", nm_service, tx_zipcode)
+        amount = objDlo.selectWorkerByService(nm_service, tx_zipcode)
+        print("==========", nm_service, tx_zipcode, amount)
+
+        worker = [{"amount": str(amount), "service": str(nm_service), "zipcode": str(tx_zipcode)}]
         #body = {"worker": worker}
         #json_str = json.dumps(body)
         return worker #body #Response(content=json_str, media_type='application/json')
     except Exception as exc:
         return Response(content="Error when searching for workers", media_type='application/json')
+
+# array = '{"params": ["tbl_service", "nu_id", 1]}'
+
+@app.post("/searchService/")
+async def selectService(service_str: str, zipcode_str: str, params_json: str):
+    p_json = params_json
+    nm_service = service_str
+    tx_zipcode = zipcode_str
+    print(p_json)
+    try:
+        objDlo = ServiceDLO()
+        #client_host = request.client.host
+        register = datetime.today()
+        data = json.loads(p_json)
+        params = data['params']
+        print(params)
+        srvc = objDlo.selectService(params)
+        print(srvc)
+        #header = [{"client_host": client_host, "register": register, "preOrder": str(hash(str(client_host)+str(register)))}]
+        header = [{"register": register}]
+        service = [{"services": srvc}]
+
+        worker = searchWorkers(nm_service, tx_zipcode)
+
+        body = {"header": header, "service": service, "worker": worker}
+        return body
+    except Exception as exc:
+        return 400
+
+@app.post("/insertService/")
+async def insertService(service_str: str, zipcode_str: str, params_json: str):
+    p_json = params_json
+    nm_service = service_str
+    tx_zipcode = zipcode_str
+    nu_id = 0
+    print(p_json)
+    try:
+        objDlo = ServiceDLO()
+        #client_host = request.client.host
+        register = datetime.today()
+        nu_id = objDlo.insertService(service_str, p_json)
+        #header = [{"client_host": client_host, "register": register, "preOrder": str(hash(str(client_host)+str(register)))}]
+        #header = [{"register": register, "preOrder": str(hash(str(nu_id)+str(register)))}]
+        service = [{"service_id": nu_id}]
+
+        worker = searchWorkers(nm_service, tx_zipcode)
+
+        body = {"service": service, "worker": worker}
+        return body
+    except Exception as exc:
+        return 400
 
 #@app.post("/")
 #async def read_root():
