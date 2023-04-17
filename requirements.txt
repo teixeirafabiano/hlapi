@@ -14,4 +14,4 @@ starlette==0.22.0
 uvicorn==0.20.0
 websockets==10.4
 wrapt==1.11.2
-
+psycopg2==2.9.6
