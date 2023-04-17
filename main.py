@@ -4,6 +4,7 @@ from datetime import datetime
 from dto.hlDto import *
 from dlo.HlDLO import *
 from dlo.ServiceDLO import *
+from dlo.TypeDLO import *
 from typing import List, Union
 
 from fastapi import FastAPI, Request, Response
@@ -99,6 +100,31 @@ async def insertService(service_str: str, zipcode_str: str, params_json: str):
         return body
     except Exception as exc:
         return 400
+
+@app.post("/listAllType/")
+async def selectAllType():
+    try:
+        objDlo = TypeDLO()
+        types = objDlo.selectAllType()
+        types = [{"types": types}]
+
+        body = {"types": types}
+        return body
+    except Exception as exc:
+        return 400
+
+@app.post("/listTypeByCategory/")
+async def selectTypeByCategoryId(id_category: str):
+    try:
+        objDlo = TypeDLO()
+        types = objDlo.selectTypeById(id_category)
+        types = [{"types": types}]
+
+        body = {"types": types}
+        return body
+    except Exception as exc:
+        return 400
+
 
 #@app.post("/")
 #async def read_root():
